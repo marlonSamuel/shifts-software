@@ -1,0 +1,16 @@
+api.shifts/node_modules
+dist
+
+
+# local env files
+api.shifts/.env.local
+api.shifts/.env.*.local
+
+# Log files
+api.shifts/npm-debug.log*
+api.shifts/yarn-debug.log*
+api.shifts/yarn-error.log*
+
+# Editor directories and files
+api.shifts/.vscode
+api.shifts/config

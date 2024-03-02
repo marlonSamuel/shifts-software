@@ -52,10 +52,7 @@ export class BranchController extends BaseController {
     ])
     public async create(req: Request, res: Response) {
         try{
-            await this.branchService.create({
-                name: req.body.name,
-                dir: req.body.dir
-            } as BranchCreateDto);
+            await this.branchService.create(req.body as BranchCreateDto);
             res.send();
         }catch (error){
             console.log("entro acá");
@@ -76,10 +73,7 @@ export class BranchController extends BaseController {
         try {
             const id = req.params.id;
 
-            await this.branchService.update(id, {
-                name: req.body.name,
-                dir: req.body.dir
-            } as BranchCreateDto);
+            await this.branchService.update(id, req.body as BranchCreateDto);
 
             res.send();
         } catch (error) {

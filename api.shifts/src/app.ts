@@ -8,18 +8,31 @@ dotenv.config({
     path: `${__dirname}/../config/${process.env.APP_ENV}.env`
 });
 
-console.log(process.env.APP_FOO)
+console.log(process.env.APP_FOO);
 
 import express, {Request,Response, NextFunction } from "express";
 import {loadControllers} from 'awilix-express';
 import loadContainer from './container';
 import dbConnection from './common/persistence/mongodb.persistence';
 import {expressjwt} from 'express-jwt';
+import cors from 'cors';
+//const http = require('http');
+
 
 const app: express.Application = express();
 
+//const server = http.createServer(app);
+
+//const io = require('socket.io')(server);
+
+//io.on('connection',()=>{
+//    console.log("Cliente conectado");
+//});
+
 // JSON suupoer
 app.use(express.json());
+// CORS Support
+app.use(cors());
 
 //container
 loadContainer(app);

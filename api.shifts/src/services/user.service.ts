@@ -32,8 +32,6 @@ export class UserService {
     public async update(id: string, entry: UserUpdateDto): Promise<void> {
         let originalEntry = await this.userRepository.find(id);
         if (originalEntry) {
-            console.log(entry);
-
             await this.userRepository.update(id, entry as IUser);
         } else {
             throw new ApplicationException('User not found.');

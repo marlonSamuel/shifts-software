@@ -1,11 +1,13 @@
 import { ApplicationException } from "../common/exceptions/application.exception";
 import { DepartmentCreateDto } from "../dtos/department.dto";
+import { BranchDepartmentRepository } from "./repositories/branchdepartment.repository";
 import { DepartmentRepository } from "./repositories/department.repository";
 import { IDepartment } from "./repositories/domain/department";
 
 export class DepartmentService {
     constructor(
-        private readonly departmentRepository: DepartmentRepository
+        private readonly departmentRepository: DepartmentRepository,
+        private readonly branchDepartmentRepository: BranchDepartmentRepository
     ){}
 
     public async all(): Promise<IDepartment[]> {
@@ -30,6 +32,11 @@ export class DepartmentService {
     }
 
     public async remove(id: string): Promise<void> {
+        console.log(id);
+        let exists = await this.branchDepartmentRepository.findByDepartment(id);
+        if(exists!.length > 0){
+            throw new ApplicationException('No se puede eliminar área, porque ya está asociado una o mas sucursales');
+        }
         await this.departmentRepository.delete(id);
     }
 }

@@ -11,4 +11,5 @@ export interface IUser {
     password: string;
     email: string | null;
     cellphone: String;
+    window?: Number
 }

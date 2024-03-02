@@ -50,6 +50,10 @@ const UserSchema = new Schema<IUser>({
     cellphone: {
         type: String,
         required: true
+    },
+    window: {
+        type: Number,
+        required: false
     }
 },{
     timestamps: true

@@ -56,7 +56,7 @@ export class ShiftService {
         if (originalEntry) {
             await this.shiftRepository.update(id, entry as IShift);
         } else {
-            throw new ApplicationException('Department not found.');
+            throw new ApplicationException('Ticket not found.');
         }
     }
 

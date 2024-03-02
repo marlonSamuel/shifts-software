@@ -76,6 +76,10 @@ export class BranchDepartmentMongoRepository implements BranchDepartmentReposito
         );
     }
 
+    public async findByDepartment(department_id: string): Promise<IBranchDepartment[]> {
+      return await model.find({department_id});
+    }
+
     public async create(entity: IBranchDepartment[]): Promise<any> {
         return await  model.insertMany(entity);
     }

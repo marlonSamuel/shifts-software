@@ -11,6 +11,8 @@ export interface UserCreateDto {
 }
 
 export interface UserUpdateDto {
+    _id?: string;
+    password?: string;
     role_id: String;
     name: string;
     lastname: string;
@@ -20,4 +22,6 @@ export interface UserUpdateDto {
     email: string | null;
     disabled: Boolean;
     cellphone: String;
+    branch_department_id?: string;
+    window?: number;
 }

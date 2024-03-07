@@ -26,7 +26,7 @@ export class AttendShiftController extends BaseController {
             this.handleException(error, res);
         }
     }
-
+    
     @route('/:id')
     @GET()
     public async find(req: Request, res: Response) {
@@ -45,21 +45,31 @@ export class AttendShiftController extends BaseController {
 
     }
 
+    @route('/status/:status')
+    @GET()
+    public async findByUserAndState(req: Request, res: Response) {
+        try{
+            const status = req.params.status;
+            let auth = (req as any).auth;
+            let result = await this.attendShiftService.findByUserAndState(auth.id,status);
+            console.log(result);
+            return res.send(result);
+        }catch (error){
+            this.handleException(error, res);
+        }
+
+    }
+
     @POST()
-    @before([
-        check('shift_id').notEmpty(),
-        validateFields
-    ])
     public async create(req: Request, res: Response) {
         let auth = (req as any).auth;
         try{
-            await this.attendShiftService.create({user_id: auth.id, shift_id: req.body.shift_id} as AttendShiftCreateDto);
-            res.send();
+            let response = await this.attendShiftService.create(auth.id);
+            res.send(response);
         }catch (error){
             console.log("entro acá");
             this.handleException(error, res);
         }
-
     }
 
     @route('/:id')
@@ -73,9 +83,7 @@ export class AttendShiftController extends BaseController {
     public async update(req: Request, res: Response) {
         try {
             const id = req.params.id;
-
             await this.attendShiftService.update(id, req.body as AttendShiftUpdateDto);
-
             res.send();
         } catch (error) {
             this.handleException(error, res);

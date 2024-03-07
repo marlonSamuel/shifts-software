@@ -26,12 +26,27 @@ export class UserService {
         //TODO: encriptar contraseña
         const salt = bcrypt.genSaltSync();
         entity.password = bcrypt.hashSync( entity.password, salt );
+        let user = await this.userRepository.findByUsername(entity.username);
+        if(user){
+            throw new ApplicationException("Nombre de usuario ya há sido utilizado");
+        }
+        let dpi = await this.userRepository.findByCui(entity.cui);
+        console.log('encontrado: ',dpi);
+        if(dpi){
+            throw new ApplicationException("DPI ya há sido utilizado");
+        }
         return await this.userRepository.create(entity as IUser);
     }
 
     public async update(id: string, entry: UserUpdateDto): Promise<void> {
         let originalEntry = await this.userRepository.find(id);
         if (originalEntry) {
+            if(entry.window !== undefined && entry.window > 0){
+                let user_window = await this.userRepository.findByWindow(entry.branch_department_id!,entry.window!);
+                if(user_window){
+                    throw new ApplicationException('Ventanilla ya está siendo ocupada por otro usuario.');
+                }
+            }
             await this.userRepository.update(id, entry as IUser);
         } else {
             throw new ApplicationException('User not found.');

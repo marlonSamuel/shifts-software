@@ -8,6 +8,7 @@ export class BranchDepartmentService {
     ){}
 
     public async all(): Promise<IBranchDepartment[]> {
+        console.log("entro departmentos")
         return await this.branchDepartmentRepository.all();
     }
 

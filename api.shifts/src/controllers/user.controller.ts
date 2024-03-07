@@ -99,9 +99,26 @@ export class UserController extends BaseController {
     public async update(req: Request, res: Response) {
         try {
             const id = req.params.id;
-
             await this.userService.update(id, req.body as UserUpdateDto);
 
+            res.send();
+        } catch (error) {
+            this.handleException(error, res);
+        }
+    }
+
+    @route('/window/:id')
+    @PUT()
+    @before([
+        check('window').notEmpty(),
+        check('status').notEmpty(),
+        check('branch_department_id').notEmpty(),
+        validateFields
+    ])
+    public async updateWindow(req: Request, res: Response) {
+        try {
+            const id = req.params.id;
+            await this.userService.update(id, req.body as UserUpdateDto);
             res.send();
         } catch (error) {
             this.handleException(error, res);

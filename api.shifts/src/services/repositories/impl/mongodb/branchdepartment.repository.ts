@@ -6,8 +6,40 @@ import model from './models/branchdepartment.model';
 
 export class BranchDepartmentMongoRepository implements BranchDepartmentRepository {
 
-    public async all(): Promise<IBranchDepartment[]> {
-        return await model.find();
+    public async all(): Promise<IBranchDepartmentGetFind[]> {
+        return await model.aggregate(
+          [{ 
+              $lookup:
+                  {
+                    from: 'departments',
+                    localField: 'department_id',
+                    foreignField: '_id',
+                    as: 'department'
+                  }
+                },
+                {$lookup:
+                  {
+                    from: "branches",
+                    localField: "branch_id",
+                    foreignField: "_id",
+                    as: "branch"
+                  }
+                },
+                {$unwind: '$department'},
+                {$unwind: '$branch'},
+                {
+                  $project:
+                     {
+                       branch_id: "$branch_id",
+                       department_id: "$department_id",
+                       department: "$department.name",
+                       branch: "$branch.name",
+                       code_dep: "$department.code",
+                       code_suc: "$branch.code"
+                     }
+               } 
+          ]
+      );
     }
 
     public async find(id: string): Promise<IBranchDepartmentGetFind | null> {

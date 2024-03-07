@@ -5,7 +5,7 @@ import { BranchCreateDto } from '../dtos/branch.dto';
 import { BaseController } from '../common/controllers/base.controller';
 import { BranchDepartmentService } from '../services/branchdepartment.service';
 
-@route('/branches/departments')
+@route('/branches_departments')
 export class BranchDepartmentsController extends BaseController {
     constructor(private readonly branchDepartmentService: BranchDepartmentService)
     {
@@ -14,6 +14,7 @@ export class BranchDepartmentsController extends BaseController {
 
     @GET()
     public async all(req: Request, res: Response) {
+        console.log("entro acá");
         try{
             res.send(
                 await this.branchDepartmentService.all()

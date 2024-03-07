@@ -43,6 +43,24 @@ export class ShiftController extends BaseController {
 
     }
 
+    @route('/today/:id')
+    @GET()
+    public async findByBranchAndDate(req: Request, res: Response) {
+        try{
+            const id = req.params.id;
+            let result = await this.shiftService.findByBranch(id)
+            if (result) {
+                res.send(result);
+            } else {
+                res.status(404);
+                res.send();
+            }
+        }catch (error){
+            this.handleException(error, res);
+        }
+
+    }
+
     @POST()
     @before([
         check('branch_department_id').notEmpty(),
@@ -52,8 +70,8 @@ export class ShiftController extends BaseController {
         let auth = (req as any).auth;
         auth._branch_department = req.body.branch_department_id;
         try{
-            await this.shiftService.create(auth);
-            res.send();
+            let shift = await this.shiftService.create(auth);
+            res.send(shift);
         }catch (error){
             console.log("entro acá");
             this.handleException(error, res);
@@ -71,8 +89,7 @@ export class ShiftController extends BaseController {
     public async update(req: Request, res: Response) {
         try {
             const id = req.params.id;
-
-            await this.shiftService.update(id, req.body as ShiftCreateDto);
+            let shift = await this.shiftService.update(id, req.body as ShiftCreateDto);
 
             res.send();
         } catch (error) {

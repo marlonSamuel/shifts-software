@@ -18,6 +18,37 @@ export class ShiftMongoRepository implements ShiftRepository {
         return await model.find({branch_department_id,date})
     }
 
+    public async findByBranchAndDateStatus(branch_department_id:string, date:string,status=false) : Promise<any> {
+        return await model.find({branch_department_id,date,status})
+    }
+
+    public async findByBranch(branch_id:string, date:string,status=false) : Promise<any> {
+        return await model.aggregate(
+            [ { $match : { branch_id : new ObjectId(branch_id), date: date, status: status } },
+                { 
+                    $lookup:
+                    {
+                      from: 'departments',
+                      localField: 'department_id',
+                      foreignField: '_id',
+                      as: 'department'
+                    }
+                  },
+                  {$unwind: '$department'},
+                  {
+                    $project:
+                       {
+                         number: "$number",
+                         department_id: "$department_id",
+                         department: "$department.name"
+                       }
+                 } 
+            ]
+        );
+
+        //return await model.find({branch_id,date,status})
+    }
+
     public async create(entity: IShift): Promise<any> {
         return await  model.create(entity);
     }

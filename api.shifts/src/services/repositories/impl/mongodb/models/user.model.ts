@@ -53,7 +53,7 @@ const UserSchema = new Schema<IUser>({
     },
     window: {
         type: Number,
-        required: false
+        default: 0
     }
 },{
     timestamps: true

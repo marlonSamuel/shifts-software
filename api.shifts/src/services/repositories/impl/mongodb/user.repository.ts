@@ -18,6 +18,14 @@ export class UserMongoRepository implements UserRepository {
         return await model.findOne({username});
     }
 
+    public async findByCui(cui: String): Promise<IUser | null> {
+        return await model.findOne({cui});
+    }
+
+    public async findByWindow(branch_department_id: string, window: number): Promise<IUser | null> {
+        return await model.findOne({branch_department_id, window});
+    }
+
     public async create(entity: IUser): Promise<any> {
         return await  model.create(entity);
     }

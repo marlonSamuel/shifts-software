@@ -8,6 +8,8 @@ dotenv.config({
     path: `${__dirname}/../config/${process.env.APP_ENV}.env`
 });
 
+process.env.TZ = 'America/Guatemala';
+
 console.log(process.env.APP_FOO);
 
 import express, {Request,Response, NextFunction } from "express";
@@ -16,9 +18,11 @@ import loadContainer from './container';
 import dbConnection from './common/persistence/mongodb.persistence';
 import {expressjwt} from 'express-jwt';
 import cors from 'cors';
+import moment from 'moment';
 //const http = require('http');
 
-
+console.log('moment, ',moment())
+console.log(new Date())
 const app: express.Application = express();
 
 //const server = http.createServer(app);

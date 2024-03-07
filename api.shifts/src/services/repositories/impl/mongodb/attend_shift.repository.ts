@@ -14,6 +14,37 @@ export class AttendShiftMongoRepository implements AttendShiftRepository {
         return await model.findById(id);
     }
 
+    public async findByUserAndState(user_id:string,status:string): Promise<IAttendShift | null> {
+        //return await model.findOne({user_id,status});
+        let data = await model.aggregate(
+            [ { $match : { user_id : new ObjectId(user_id), status: status } },
+                { 
+                    $lookup:
+                    {
+                      from: 'shifts',
+                      localField: 'shift_id',
+                      foreignField: '_id',
+                      as: 'shift'
+                    }
+                  },
+                  {$unwind: '$shift'},
+                  {
+                    $project:
+                       {
+                         window: "$window",
+                         number: "$shift.number",
+                         shift_id: "$shift._id",
+                         createdAt: "$createdAt"
+                       }
+                 } 
+            ]
+        );
+        if(data.length > 0){
+            return data[0];
+        }
+        return null;
+    }
+
     public async create(entity: IAttendShift): Promise<any> {
         return await  model.create(entity);
     }

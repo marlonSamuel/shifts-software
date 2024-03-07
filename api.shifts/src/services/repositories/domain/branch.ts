@@ -1,4 +1,5 @@
 export interface IBranch {
+    _id?: String;
     name: String,
     dir: String,
     code: string;

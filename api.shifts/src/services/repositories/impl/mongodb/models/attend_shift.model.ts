@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { IAttendShift } from '../../../domain/attend_shift';
+import moment from 'moment';
 
 const AttendShiftSchema = new Schema<IAttendShift>({
     shift_id: {
@@ -13,7 +14,7 @@ const AttendShiftSchema = new Schema<IAttendShift>({
         required: true
     },
     end: {
-        type: Date,
+        type: String,
         required: false
     },
     tiempo: {
@@ -23,9 +24,21 @@ const AttendShiftSchema = new Schema<IAttendShift>({
     status: {
         type: String,
         default: true
+    },
+    window: {
+        type: Number,
+        required: false
+    },
+    createdAt: {
+        type: String,
+        default:  moment().format('YYYY-MM-DD HH:mm:ss')
+    },
+    updatedAt: {
+        type: String,
+        default:  moment().format('YYYY-MM-DD HH:mm:ss')
     }
 },{
-    timestamps: true
+    timestamps: false
 });
 
 let _model = model('AttendShift', AttendShiftSchema);

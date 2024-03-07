@@ -1,13 +1,16 @@
 import { ApplicationException } from "../common/exceptions/application.exception";
 import { DepartmentCreateDto } from "../dtos/department.dto";
+import { BranchRepository } from "./repositories/branch.repository";
 import { BranchDepartmentRepository } from "./repositories/branchdepartment.repository";
 import { DepartmentRepository } from "./repositories/department.repository";
+import { IBranchDepartment } from "./repositories/domain/branchdepartment";
 import { IDepartment } from "./repositories/domain/department";
 
 export class DepartmentService {
     constructor(
         private readonly departmentRepository: DepartmentRepository,
-        private readonly branchDepartmentRepository: BranchDepartmentRepository
+        private readonly branchDepartmentRepository: BranchDepartmentRepository,
+        private readonly branchRepository: BranchRepository
     ){}
 
     public async all(): Promise<IDepartment[]> {
@@ -19,7 +22,20 @@ export class DepartmentService {
     }
 
     public async create(entity: DepartmentCreateDto): Promise<any>{
-        return await this.departmentRepository.create(entity as IDepartment);
+        let inserted = await this.departmentRepository.create(entity as IDepartment);
+        let branches = await this.branchRepository.all();
+        let branches_departments: IBranchDepartment[] = [];
+        if(branches.length > 0){
+            branches.forEach(element => {
+                branches_departments.push({
+                    department_id: inserted._id,
+                    branch_id: element._id!
+                });
+            });
+            console.log(branches_departments);
+            this.branchDepartmentRepository.create(branches_departments);
+        }
+        return inserted;
     }
 
     public async update(id: string, entry: DepartmentCreateDto): Promise<void> {

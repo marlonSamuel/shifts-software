@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
 import { IUser } from '../../../domain/user';
 import { IShift } from '../../../domain/shift';
+import moment from 'moment';
 
 const ShiftSchema = new Schema<IShift>({
     branch_department_id: {
@@ -13,13 +14,23 @@ const ShiftSchema = new Schema<IShift>({
         ref:'User',
         required: true
     },
+    branch_id: {
+        type: Schema.Types.ObjectId,
+        ref:'Branch',
+        required: true
+    },
+    department_id: {
+        type: Schema.Types.ObjectId,
+        ref:'Department',
+        required: true
+    },
     number: {
         type: String,
         required: true
     },
     date: {
         type: String,
-        required: true
+        default: moment().format('YYYY-MM-DD')
     },
     status: {
         type: Boolean,

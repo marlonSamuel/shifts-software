@@ -5,13 +5,14 @@ import './index.css';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/auth/AuthContext';
 import { UIProvider } from './context/UIContext';
+import { OptionScreenPage } from './pages/OptionScreenPage';
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <UIProvider>
-          <DefaultPage />
+          <OptionScreenPage />
         </UIProvider>
       </AuthProvider>
     </BrowserRouter>

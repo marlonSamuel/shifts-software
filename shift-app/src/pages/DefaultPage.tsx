@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
     BankOutlined,
     BarChartOutlined,
@@ -25,13 +25,24 @@ export const DefaultPage = () => {
     //obtener estado de autenticación.
     const {logged, logout, user} = useContext(AuthContext);
     const [collapsed, setCollapsed] = useState(false);
+
+    const [showSB, setShowSB] = useState(false);
+    
+    useEffect(() => {
+      if(!logged || (user?.role !== undefined && user.role !== 'admin')){
+        setShowSB(false);
+      }else{
+        setShowSB(true);
+      }
+    }, [logged]);
+
     const {
       token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
   
     return (
       <Layout style={{ minHeight: '100vh' }}>
-        <Sider hidden={!logged} trigger={null} collapsible collapsed={collapsed}>
+        <Sider hidden={!showSB} trigger={null} collapsible collapsed={collapsed}>
           <div className="demo-logo-vertical" /> 
           <Menu
             theme="dark"
@@ -89,7 +100,7 @@ export const DefaultPage = () => {
                 height: 64,
               }}
             />
-           <b>{user?.branch.toUpperCase()} -  {(user?.name+' '+user?.lastname).toUpperCase()} <span style={{color: 'green'}}>online</span> </b>
+           <b>{user?.branch.toUpperCase()} -  {(user?.name+' '+user?.lastname).toUpperCase()} </b>
           </Header>
           <Content
             style={{

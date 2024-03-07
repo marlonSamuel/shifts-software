@@ -15,6 +15,7 @@ export interface IUser {
     branch_department_id: string;
     iat: number;
     exp: number;
+    window?: number;
 }
 
 export interface IAuthData {

@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react'
 import { UIContext } from '../../context/UIContext';
 import { IPaginate } from '../../interfaces/IApp';
 import { initialState, notificationMessage } from '../../helpers/shared';
-import { IAttendShift, IAttendShiftUpdate, IBranch, IShift, IShiftActive } from '../../interfaces/IAdmin';
+import { IAttendShift, IAttendShiftUpdate, IBranch, IShift, IShiftActive, IShiftFinished } from '../../interfaces/IAdmin';
 import api from '../../api/axios';
 
 export const useAttendShift = () => {
@@ -14,6 +14,7 @@ export const useAttendShift = () => {
     const [items, setItems] = useState<IAttendShift[]>([]);
     const [shifts, setShifts] = useState<IAttendShift[]>([]);
     const [state_shift, setStateShift] = useState<IShiftActive>();
+    const [attended_shift, setAttendedShift] = useState<IShiftFinished[]>([]);
 
     //lista inicial de data
     const getAll = async() => {
@@ -31,6 +32,18 @@ export const useAttendShift = () => {
         setLoading(true);
         await api.get('/attend_shifts/status/'+state).then(r=> {
             setStateShift(r.data);
+        }).catch(e=>{
+            
+        });
+        setLoading(false);
+    } 
+
+    
+    //lista inicial de data
+    const getAttendedShift = async(branch_id:string,date: string) => {
+        setLoading(true);
+        await api.get('/attend_shifts/branch_date/'+branch_id+'/'+date).then(r=> {
+            setAttendedShift(r.data);
         }).catch(e=>{
             
         });
@@ -72,6 +85,8 @@ export const useAttendShift = () => {
     shifts,
     update,
     state_shift,
-    findByUserAndState
+    findByUserAndState,
+    getAttendedShift,
+    attended_shift
   }
 }

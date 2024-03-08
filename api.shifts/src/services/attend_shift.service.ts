@@ -27,6 +27,10 @@ export class AttendShiftService {
         return await this.attendShiftRepository.findByUserAndState(user_id,status);
     }
 
+    public async findBranchAndStatus(branch_id: string,date:string): Promise<IAttendShift[]>{
+        return await this.attendShiftRepository.findByBranchAndStatus(branch_id,date);
+    }
+
     public async create(user_id: string): Promise<any>{
         let user = await this.userRepository.find(user_id);
         let shifts = await this.shiftRepository.findByBranchAndDateStatus(user!.branch_department_id.toString(), moment().format('YYYY-MM-DD'),false);

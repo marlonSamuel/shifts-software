@@ -82,3 +82,18 @@ export interface IShiftActive {
 	shift_id: string;
     createdAt: string;
 }
+
+export interface IShiftFinished {
+    _id: string;
+    ymd: string;
+    window: number;
+    number: string;
+    shift_id: string;
+    createdAt: string;
+    name_user: string;
+    lastname_user: string;
+    user_id: string;
+    status: string;
+    branch_id: string;
+    deparment: string;
+}

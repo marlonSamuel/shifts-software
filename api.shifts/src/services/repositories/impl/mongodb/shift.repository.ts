@@ -40,7 +40,8 @@ export class ShiftMongoRepository implements ShiftRepository {
                        {
                          number: "$number",
                          department_id: "$department_id",
-                         department: "$department.name"
+                         department: "$department.name",
+                         date: "$date"
                        }
                  } 
             ]

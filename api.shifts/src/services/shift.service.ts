@@ -18,7 +18,6 @@ export class ShiftService {
     async generateNumber (branch_department_id: String) : Promise<String | null>{
         let number = "";
         let branch_department = await this.branchDepartmentRepository.find(branch_department_id);
-        console.log(branch_department);
         if(!branch_department){
             return null;
         }
@@ -39,7 +38,6 @@ export class ShiftService {
     }
 
     public async findByBranchAndDate(branch_department_id: String): Promise<IShift | null>{
-        console.log(moment().format('YYYY-MM-DD'));
         let shifts = await this.shiftRepository.findByBranchAndDate(branch_department_id.toString(), moment().format('YYYY-MM-DD'));
         return shifts;
     }

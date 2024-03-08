@@ -52,7 +52,21 @@ export class AttendShiftController extends BaseController {
             const status = req.params.status;
             let auth = (req as any).auth;
             let result = await this.attendShiftService.findByUserAndState(auth.id,status);
-            console.log(result);
+            return res.send(result);
+        }catch (error){
+            this.handleException(error, res);
+        }
+
+    }
+
+    @route('/branch_date/:branch_id/:date')
+    @GET()
+    public async findBranchAndStatus(req: Request, res: Response) {
+        try{
+            const branch_id = req.params.branch_id;
+            const date = req.params.date;
+            let auth = (req as any).auth;
+            let result = await this.attendShiftService.findBranchAndStatus(branch_id,date);
             return res.send(result);
         }catch (error){
             this.handleException(error, res);

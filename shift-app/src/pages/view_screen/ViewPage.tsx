@@ -1,24 +1,46 @@
 import { Button, Card, Col, Divider, List, Row, Tag, Typography } from 'antd'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useShift } from '../../hooks/admin/useShift';
 import { AuthContext } from '../../context/auth/AuthContext';
+import { useAttendShift } from '../../hooks/admin/useAttendShift';
+import moment from 'moment';
+import { IShiftFinished } from '../../interfaces/IAdmin';
+import { SocketContext } from '../../context/SocketContext';
+import { ShiftContext } from '../../context/shift/ShiftContext';
 
 const { Title, Text } = Typography;
 
-const data:any = [];
-
 export const ViewPage = () => {
   const {user} = useContext(AuthContext);
-  const {shifts,getAllShifts} = useShift();
+  const {attended_shift, getAttendedShift, getAllShifts, shifts} = useContext(ShiftContext);
+  const [inicied_shifts, setIniciedShifts] = useState<IShiftFinished[]>([]);
+  const [finished_shifts, setFinishedShifts] = useState<IShiftFinished[]>([]);
+  const [message, setMessage] = useState("");
+  const {socket} = useContext(SocketContext);
+
+  useEffect(() => {
+    socket?.on( 'send-shift', (data:any) => {
+      setMessage(data.msg);
+      callTicket(data.msg);
+  } )
+  }, [socket]);
+  
 
   useEffect(() => {
     if(user?.branch_id !== undefined){
       getAllShifts(user.branch_id);
+      getAttendedShift(user.branch_id, moment().format('YYYY-MM-DD'));
     }
   }, []);
 
-  const callTicket = () => {
-    const utterance = new SpeechSynthesisUtterance("LLAMANDO A TICKET NUMERO 454, POR FAVOR PASAR A VENTANILLA NO 5");
+  useEffect(() => {
+    setIniciedShifts(attended_shift.filter(x=>x.status === "I"));
+    setFinishedShifts(attended_shift.filter(x=>x.status !== "I"));
+  }, [attended_shift]);
+
+  const callTicket = async(message: string) => {
+    console.log("entro a speech "+message);
+    const utterance = new SpeechSynthesisUtterance(message);
     // Select a voice
     const voices = speechSynthesis.getVoices();
     utterance.voice = voices[0]; // Choose a specific voice
@@ -29,10 +51,10 @@ export const ViewPage = () => {
   return (
     <div>
       <Row>
-        
+        <Button onClick={()=>callTicket("prueba A D")}></Button>
       <Divider>
         <Card>  
-            <Title style={{color: 'green'}} level={ 1 }>LLAMANDO A TICKET NO 454 PASAR A VENTANILLA NO 5</Title>
+            <Title style={{color: 'green'}} level={ 1 }>{message.toUpperCase()}</Title>
           
         </Card>
         </Divider>
@@ -51,15 +73,14 @@ export const ViewPage = () => {
             xl: 6,
             xxl: 3,
           }}
-          dataSource={data}
-          renderItem={(item:any) => (
+          dataSource={inicied_shifts}
+          renderItem={item => (
             <List.Item>
                 <Card hoverable
                           style={{ width: 400, marginTop: 16, color: 'green',border: '3px solid' }}
                           actions={[
-                              <Tag color="green"> { item.number } </Tag>,
-                              <Tag color="magenta"> Escritorio: { item.number } </Tag>,
-                              <Tag color="green"> { item.number } </Tag>,
+                              <Tag color="green"> AREA: { item.deparment } </Tag>,
+                              <Tag color="magenta"> VENTANILLA NO: { item.window } </Tag>,
                           ]}
                       >
                           <Title> No. { item.number  }</Title>
@@ -93,19 +114,19 @@ export const ViewPage = () => {
               Historico
             </Divider>
             <List 
-                        dataSource={ data }
-                        renderItem={ (item: any) => (
+                        dataSource={ finished_shifts }
+                        renderItem={ item  => (
                             <List.Item>
                                 <List.Item.Meta 
                                     title={ `Ticket No. ${ item.number }` }
                                     description={
                                         <>
-                                            <Text type="secondary">En el escritorio: </Text>
-                                            <Tag color="magenta"> { item.number } </Tag>
+                                            <Text type="secondary">En la ventanilla: </Text>
+                                            <Tag color="magenta"> { item.window } </Tag>
                                             <Text type="secondary"> Agente: </Text>
-                                            <Tag color="volcano"> { item.number } </Tag>
+                                            <Tag color="volcano"> { item.name_user+' '+item.lastname_user } </Tag>
                                             <Text type="secondary"> Area: </Text>
-                                            <Tag color="volcano"> { item.number } </Tag>
+                                            <Tag color="volcano"> { item.deparment } </Tag>
                                         </>
                                     }
                                 />

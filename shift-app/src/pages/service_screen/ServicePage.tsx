@@ -10,6 +10,7 @@ import { IAttendShift, IAttendShiftUpdate, IShift, IUser } from '../../interface
 import { useAttendShift } from '../../hooks/admin/useAttendShift';
 import moment from 'moment';
 import { notificationMessage } from '../../helpers/shared';
+import { SocketContext } from '../../context/SocketContext';
 
 type FieldType = {
   window?: number;
@@ -26,6 +27,7 @@ export const ServicePage = () => {
   const [showForm, setShowForm] = useState<boolean>(true);
   const {update, updateWindow, item, getOne} = useUser();
   const {create:nextShift, update: finishShift, state_shift, findByUserAndState} = useAttendShift();
+  const {socket} = useContext(SocketContext);
 
   useEffect(() => {
     if(user !== null && user !== undefined){
@@ -37,6 +39,9 @@ export const ServicePage = () => {
   useEffect(() => {
     if(state_shift){
       console.log('estado_shift',state_shift);
+      socket.emit("call-shift", {
+          msg: "LLamando a turno no "+state_shift?.number + " por favor pasar a ventanilla no "+state_shift?.window+ " del area administrativa"
+      })
     }
   }, [state_shift]);
 
@@ -47,6 +52,15 @@ export const ServicePage = () => {
       }
     }
   }, [item]);
+
+  const callShift = async() =>{
+    if(state_shift){
+      console.log('estado_shift',state_shift);
+      socket.emit("call-shift", {
+          msg: "LLamando a turno no "+state_shift?.number + " por favor pasar a ventanilla no "+state_shift?.window+ " del area administrativa"
+      })
+    }
+  }
 
   const onFinish = async(data: IForm) => {
     setLoading(true);
@@ -83,9 +97,11 @@ export const ServicePage = () => {
       console.log(resp);
       if(resp){
         await findByUserAndState('I');
+        socket.emit("list-attended",user?.branch_id);
       }
       setLoading(false); 
     }
+
   };
 
   //actualizar estado (teminado, cancelado)
@@ -180,7 +196,7 @@ export const ServicePage = () => {
                   </Tooltip>
 
                   <Tooltip title="Volver a llamar al turno actualmente en pantalla">
-                  <Button icon={<SoundOutlined/>}  size='large' type='primary'>Volver a llamar</Button>
+                  <Button onClick={callShift} icon={<SoundOutlined/>}  size='large' type='primary'>Volver a llamar</Button>
                   </Tooltip>
                   
                   <Tooltip title="Cancelar turno (en caso espera)">

@@ -8,11 +8,14 @@ import { useShift } from '../../hooks/admin/useShift';
 import { useBranch } from '../../hooks/admin/useBranch';
 import { IBranchDepartment, IShift } from '../../interfaces/IAdmin';
 import { UIContext } from '../../context/UIContext';
+import { SocketContext } from '../../context/SocketContext';
 
 export const TicketPage = () => {
   const {user,logout} = useContext(AuthContext);
   const {loading, setLoading} = useContext(UIContext);
   const {departments, getAllDepartmentsByBranch} = useBranch();
+  const {socket} = useContext(SocketContext);
+
   const [ticket, setTicket] = useState({
     number: "",
     area: ""
@@ -41,6 +44,9 @@ export const TicketPage = () => {
         number: resp.number,
         area: item.department.toString()
       })
+
+      socket.emit("list-new",user?.branch_id);
+      
     setLoading(false);
   }
 
@@ -82,7 +88,7 @@ export const TicketPage = () => {
 
     <List
       loading={loading}
-      grid={{ gutter: 16, column: 4 }}
+      grid={{ gutter: 16, column: 3 }}
       dataSource={departments}
       renderItem={(item) => (
         <List.Item onClick={() => createShift(item)}>

@@ -45,6 +45,62 @@ export class AttendShiftMongoRepository implements AttendShiftRepository {
         return null;
     }
 
+    public async findByBranchAndStatus(branch_id:string,date: string): Promise<IAttendShift[]> {
+        //return await model.findOne({user_id,status});
+        return await model.aggregate(
+            [ 
+                { 
+                    $lookup:
+                    {
+                      from: 'shifts',
+                      localField: 'shift_id',
+                      foreignField: '_id',
+                      as: 'shift'
+                    },
+                  },
+                  { 
+                    $lookup:
+                    {
+                      from: 'users',
+                      localField: 'user_id',
+                      foreignField: '_id',
+                      as: 'user'
+                    },
+                  },
+                  {$unwind: '$shift'},
+                  {$unwind: '$user'},
+                  { 
+                     $lookup:
+                     {
+                       from: 'departments',
+                       localField: 'shift.department_id',
+                       foreignField: '_id',
+                       as: 'department'
+                     },
+                   },
+                   {$unwind: '$department'},
+                  {
+                    $project:
+                       {
+                        ymd: { $substr: ["$createdAt",0,10] },
+                         window: "$window",
+                         number: "$shift.number",
+                         shift_id: "$shift._id",
+                         createdAt: "$createdAt",
+                         name_user: "$user.name",
+                         lastname_user: "$user.lastname",
+                         user_id: "$user_id",
+                         status: "$status",
+                         branch_id: "$shift.branch_id",
+                         deparment: "$department.name"
+                       },
+                 },
+                 { $match : { branch_id: new ObjectId(branch_id), ymd: date } }
+                  
+            ]
+        );
+    }
+
     public async create(entity: IAttendShift): Promise<any> {
         return await  model.create(entity);
     }

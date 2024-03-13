@@ -50,7 +50,7 @@ export interface IShift {
     _id?: String;
     branch_department_id?: String;
     branch_id?: String;
-    deparment_id?: String;
+    department_id?: String;
     department?: String;
     user_id?: String;
     number?: string;

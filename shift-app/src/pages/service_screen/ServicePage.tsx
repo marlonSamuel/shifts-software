@@ -1,5 +1,4 @@
-import { Button, Card, Col, Divider, Form, Input, InputNumber, Row, Space, Tooltip } from 'antd'
-import Title from 'antd/es/typography/Title';
+import { Button, Card, Col, Divider, Form, Input, InputNumber, List, Row, Space, Tag, Tooltip, Typography } from 'antd'
 import React, { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../context/auth/AuthContext';
 import { disconnect } from 'process';
@@ -11,6 +10,9 @@ import { useAttendShift } from '../../hooks/admin/useAttendShift';
 import moment from 'moment';
 import { notificationMessage } from '../../helpers/shared';
 import { SocketContext } from '../../context/SocketContext';
+import { ShiftContext } from '../../context/shift/ShiftContext';
+
+const { Title, Text } = Typography;
 
 type FieldType = {
   window?: number;
@@ -28,6 +30,15 @@ export const ServicePage = () => {
   const {update, updateWindow, item, getOne} = useUser();
   const {create:nextShift, update: finishShift, state_shift, findByUserAndState} = useAttendShift();
   const {socket} = useContext(SocketContext);
+  const {shifts} = useContext(ShiftContext);
+  const [shiftsArea, setShiftsArea] = useState<IShift[]>([]);
+
+
+  useEffect(() => {
+    console.log(shifts)
+    setShiftsArea(shifts.filter(x=>x.department_id === user?.department_id))
+  }, [shifts])
+  
 
   useEffect(() => {
     if(user !== null && user !== undefined){
@@ -40,7 +51,7 @@ export const ServicePage = () => {
     if(state_shift){
       console.log('estado_shift',state_shift);
       socket.emit("call-shift", {
-          msg: "LLamando a turno no "+state_shift?.number + " por favor pasar a ventanilla no "+state_shift?.window+ " del area administrativa"
+          msg: "LLamando a turno número "+state_shift?.number + " por favor pasar a ventanilla número "+state_shift?.window+ " del area administrativa"
       })
     }
   }, [state_shift]);
@@ -57,7 +68,7 @@ export const ServicePage = () => {
     if(state_shift){
       console.log('estado_shift',state_shift);
       socket.emit("call-shift", {
-          msg: "LLamando a turno no "+state_shift?.number + " por favor pasar a ventanilla no "+state_shift?.window+ " del area administrativa"
+          msg: "LLamando a turno número "+state_shift?.number + " por favor pasar a ventanilla número "+state_shift?.window+ " del area administrativa"
       })
     }
   }
@@ -210,6 +221,34 @@ export const ServicePage = () => {
                   
                 </Space>
               </Card>
+            </Col>
+          </Row>
+          <Row>
+
+            <Col span={12}>
+            
+          <Divider>
+                TURNOS EN ESPERA
+            </Divider>
+            <Divider>
+              <List 
+                  dataSource={ shiftsArea.slice(0,5) }
+                  renderItem={ item => (
+                      <List.Item>
+                          <List.Item.Meta 
+                              title={ `Ticket No. ${ item.number }` }
+                              description={
+                                  <>
+                                      <Text type="secondary"> Area: </Text>
+                                      <Tag color="volcano"> { item.department } </Tag>
+                                  </>
+                              }
+                          />
+                      </List.Item>
+                  )}
+              
+              />
+            </Divider>
             </Col>
           </Row>
           </div>

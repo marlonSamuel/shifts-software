@@ -35,7 +35,7 @@ export const ViewPage = () => {
 
   useEffect(() => {
     setIniciedShifts(attended_shift.filter(x=>x.status === "I"));
-    setFinishedShifts(attended_shift.filter(x=>x.status !== "I"));
+    setFinishedShifts((attended_shift.filter(x=>x.status !== "I")).reverse());
   }, [attended_shift]);
 
   const callTicket = async(message: string) => {
